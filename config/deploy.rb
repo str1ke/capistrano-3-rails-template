@@ -5,11 +5,9 @@ set :deploy_user, 'deploy'
 set :scm, :git
 set :repo_url, 'git@github.com:username/repo.git'
 
-# setup rvm.
-set :rbenv_type, :system
-set :rbenv_ruby, '2.1.1'
-set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-set :rbenv_map_bins, %w{rake gem bundle ruby rails}
+# setup rbenv.
+set :rbenv_ruby, '2.1.2'
+set :rbenv_custom_path, '/opt/rbenv'
 
 # how many old releases do we want to keep, not much
 set :keep_releases, 5
@@ -41,7 +39,6 @@ set(:config_files, %w(
 set(:executable_config_files, %w(
   unicorn_init.sh
 ))
-
 
 # files which need to be symlinked to other parts of the
 # filesystem. For example nginx virtualhosts, log rotation
@@ -75,8 +72,10 @@ set(:symlinks, [
 namespace :deploy do
   # make sure we're deploying what we think we're deploying
   before :deploy, "deploy:check_revision"
+
   # only allow a deploy with passing tests to deployed
   before :deploy, "deploy:run_tests"
+
   # compile assets locally then rsync
   after 'deploy:symlink:shared', 'deploy:compile_assets_locally'
   after :finishing, 'deploy:cleanup'
@@ -97,4 +96,3 @@ namespace :deploy do
   # automatically.
   after 'deploy:publishing', 'deploy:restart'
 end
-

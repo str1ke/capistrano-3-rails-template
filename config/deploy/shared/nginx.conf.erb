@@ -1,5 +1,5 @@
 upstream unicorn {
-  server unix:/tmp/unicorn.<%= fetch(:full_app_name) %>.sock fail_timeout=0;
+  server unix:<%= fetch(:deploy_to) %>/current/tmp/sockets/unicorn.sock fail_timeout=0;
 }
 
 server {
@@ -50,6 +50,7 @@ server {
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
   keepalive_timeout 10;
+
   ssl on;
   ssl_certificate <%= fetch(:deploy_to) %>/shared/ssl_cert.crt;
   ssl_certificate_key <%= fetch(:deploy_to) %>/shared/ssl_private_key.key;
